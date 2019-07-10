@@ -7,6 +7,5 @@ Based on the classic "3 tiers demo", we expect to use Scaling Terraform provider
 
 - Install Terraform 0.11x
 - Install both providers
-- Export AK, SK for Outscale
-- Export Scalingo API Token
+- Configure credentials in variables.tf
 - Profit

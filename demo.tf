@@ -6,10 +6,10 @@ resource "outscale_net" "demo_net" {
 # ------------------ Public Network Setup ------------------ #
 resource "outscale_subnet" "subnet_pub" {
     # subregion_name = "${var.region}a"
-    cidr_block     = "10.1.0.0/24"
-    # ip_range       = "10.1.0.0/24"
-    vpc_id         = "${outscale_net.demo_net.id}"
-    # net_id         = "${outscale_net.demo_net.id}"
+    # cidr_block     = "10.1.0.0/24"
+    ip_range       = "10.1.0.0/24"
+    # vpc_id         = "${outscale_net.demo_net.id}"
+    net_id         = "${outscale_net.demo_net.id}"
 }
 
 resource "outscale_security_group" "security_group_pub" {
@@ -27,8 +27,8 @@ resource "outscale_internet_service_link" "demo_internet_service_link" {
 }
 
 resource "outscale_route_table" "rt_pub" {
-    vpc_id = "${outscale_net.demo_net.net_id}"
-    # net_id = "${outscale_net.demo_net.net_id}"
+    # vpc_id = "${outscale_net.demo_net.net_id}"
+    net_id = "${outscale_net.demo_net.net_id}"
 }
 
 resource "outscale_route_table_link" "rt_pub_link" {
@@ -37,8 +37,8 @@ resource "outscale_route_table_link" "rt_pub_link" {
 }
 
 resource "outscale_route" "route_internet_pub" {
-    destination_cidr_block = "0.0.0.0/0"
-    # destination_ip_range = "0.0.0.0/0"
+    # destination_cidr_block = "0.0.0.0/0"
+    destination_ip_range = "0.0.0.0/0"
     gateway_id           = "${outscale_internet_service.demo_internet_service.internet_service_id}"
     route_table_id       = "${outscale_route_table.rt_pub.route_table_id}"
 }
@@ -46,10 +46,10 @@ resource "outscale_route" "route_internet_pub" {
 # ------------------ Private Network Setup ------------------ #
 resource "outscale_subnet" "subnet_priv" {
     # subregion_name = "${var.region}b"
-    cidr_block     = "10.2.0.0/24"
-    # ip_range       = "10.2.0.0/24"
-    vpc_id         = "${outscale_net.demo_net.net_id}"
-    # net_id         = "${outscale_net.demo_net.net_id}"
+    # cidr_block     = "10.2.0.0/24"
+    ip_range       = "10.2.0.0/24"
+    # vpc_id         = "${outscale_net.demo_net.net_id}"
+    net_id         = "${outscale_net.demo_net.net_id}"
 }
 
 resource "outscale_security_group" "security_group_priv" {
@@ -59,8 +59,8 @@ resource "outscale_security_group" "security_group_priv" {
 }
 
 resource "outscale_route_table" "rt_priv" {
-    vpc_id = "${outscale_net.demo_net.net_id}"
-    # net_id = "${outscale_net.demo_net.net_id}"
+    # vpc_id = "${outscale_net.demo_net.net_id}"
+    net_id = "${outscale_net.demo_net.net_id}"
 }
 
 resource "outscale_public_ip" "ip_nat" {
@@ -69,8 +69,8 @@ resource "outscale_public_ip" "ip_nat" {
 resource "outscale_nat_service" "demo_nat_service" {
     depends_on   = ["outscale_route.route_internet_pub"]
     subnet_id    = "${outscale_subnet.subnet_pub.subnet_id}"
-    allocation_id = "${outscale_public_ip.ip_nat.id}"
-    # public_ip_id = "${outscale_public_ip.ip_nat.id}"
+    # allocation_id = "${outscale_public_ip.ip_nat.id}"
+    public_ip_id = "${outscale_public_ip.ip_nat.id}"
 }
 
 resource "outscale_route_table_link" "rt_priv_link" {
@@ -79,10 +79,10 @@ resource "outscale_route_table_link" "rt_priv_link" {
 }
 
 resource "outscale_route" "route_internet_priv" {
-    destination_cidr_block = "0.0.0.0/0"
-    # destination_ip_range = "0.0.0.0/0"
-    # gateway_id           = "${outscale_nat_service.demo_nat_service.nat_service_id}"
-    gateway_id           = "${outscale_nat_service.demo_nat_service.nat_gateway_id}"
+    # destination_cidr_block = "0.0.0.0/0"
+    destination_ip_range = "0.0.0.0/0"
+    gateway_id           = "${outscale_nat_service.demo_nat_service.nat_service_id}"
+    # gateway_id           = "${outscale_nat_service.demo_nat_service.nat_gateway_id}"
     route_table_id       = "${outscale_route_table.rt_priv.route_table_id}"
 }
 
@@ -90,8 +90,8 @@ resource "outscale_route" "route_internet_priv" {
 
 resource "outscale_vm" "vm_front" {
     image_id                 = "${var.image_id}"
-    # vm_type                  = "${var.vm_type}"
-    instance_type            = "${var.vm_type}"
+    vm_type                  = "${var.vm_type}"
+    # instance_type            = "${var.vm_type}"
     # keypair_name             = "${var.keypair_name}"
     # security_group_ids       = ["${outscale_security_group.security_group_pub.security_group_id}"]
     # placement_subregion_name = "${var.region}a"
@@ -109,8 +109,8 @@ resource "outscale_public_ip_link" "ip_pub_link" {
 }
 
 resource "outscale_volume" "vol_vm_pub" {
-    # subregion_name = "${var.region}a"
-    availability_zone = "${var.region}a"
+    subregion_name = "${var.region}a"
+    # availability_zone = "${var.region}a"
     size            = 10
     # iops            = 100
     volume_type     = "gp2"
@@ -118,7 +118,7 @@ resource "outscale_volume" "vol_vm_pub" {
 }
 
 resource "outscale_volumes_link" "vol_vm_pub_link" {
-    device = "/dev/xvdb"
+    device_name = "/dev/xvdb"
     volume_id   = "${outscale_volume.vol_vm_pub.id}"
     # vm_id       = "${outscale_vm.vm_front.id}"
 }
