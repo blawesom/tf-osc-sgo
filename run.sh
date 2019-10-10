@@ -1,6 +1,6 @@
-#! /bin/bash
+#!/bin/bash
 
 source .env_public
 source .env_secret
 
-terraform plan
+~/Applications/homebrew/opt/terraform@0.11/bin/terraform plan
